@@ -1,4 +1,4 @@
-import {createEl,clearEl,formatCurrency,formatNumber} from '../utils/dom.js';
+import {createEl,clearEl,formatCurrency,formatNumber,createIcon} from '../utils/dom.js';
 
 const planDescriptions={
   annuity:'Анюитетните вноски остават равни, което улеснява планирането на бюджета.',
@@ -7,9 +7,10 @@ const planDescriptions={
 
 export const createResultsView=()=>{
   const container=createEl('section',{className:'results'},[
-    createEl('h2',{},['Резултати']),
+    createEl('h2',{},[createIcon('chart',20),' Резултати']),
     createEl('div',{className:'result-summary'}),
-    createEl('div',{className:'result-details'})
+    createEl('div',{className:'result-details'}),
+    createEl('div',{className:'result-chart'})
   ]);
   return container;
 };
@@ -17,8 +18,10 @@ export const createResultsView=()=>{
 export const renderResults=(root,{principal,fee,modes},options)=>{
   const summary=root.querySelector('.result-summary');
   const details=root.querySelector('.result-details');
+  const chart=root.querySelector('.result-chart');
   clearEl(summary);
   clearEl(details);
+  clearEl(chart);
 
   summary.appendChild(createEl('div',{className:'result-card'},[
     createEl('h3',{},['Основни данни']),
@@ -37,6 +40,9 @@ export const renderResults=(root,{principal,fee,modes},options)=>{
   if(options.ctaType!=='none'){
     details.appendChild(createCtaBlock(options.ctaType));
   }
+
+  // Lazy load chart
+  setTimeout(()=>renderChart(chart,modes),100);
 };
 
 const createPlanCard=(label,{payment,total,schedule},key,{infoLevel})=>{
@@ -82,4 +88,23 @@ const createCtaBlock=type=>{
     createEl('h3',{},['Допълнителна консултация']),
     createEl('a',{href:'#',target:'_blank',rel:'noopener'},['Научете повече за кредитните ни решения →'])
   ]);
+};
+
+const renderChart=(container,modes)=>{
+  if(!modes.length)return;
+  const canvas=createEl('canvas',{width:400,height:200});
+  const ctx=canvas.getContext('2d');
+  const data=modes[0].data.schedule.slice(0,12); // First 12 months
+  const maxPayment=Math.max(...data.map(d=>d.payment));
+  const barWidth=30;
+  const gap=10;
+  ctx.fillStyle='#0e3a5b';
+  data.forEach((row,i)=>{
+    const height=(row.payment/maxPayment)*150;
+    ctx.fillRect(i*(barWidth+gap),200-height,barWidth,height);
+  });
+  ctx.fillStyle='#b33951';
+  ctx.font='12px sans-serif';
+  ctx.fillText('График на първите 12 вноски',10,20);
+  container.appendChild(canvas);
 };

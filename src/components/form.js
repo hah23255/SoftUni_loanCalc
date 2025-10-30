@@ -1,10 +1,10 @@
-import {createEl} from '../utils/dom.js';
+import {createEl,createIcon} from '../utils/dom.js';
 
 const loanOptions=[
-  {value:'mortgage',label:'Ипотечен кредит'},
-  {value:'consumer',label:'Потребителски кредит'},
-  {value:'auto',label:'Автокредит'},
-  {value:'other',label:'Друг тип'}
+  {value:'mortgage',label:'Ипотечен кредит',icon:'house'},
+  {value:'consumer',label:'Потребителски кредит',icon:'creditcard'},
+  {value:'auto',label:'Автокредит',icon:'car'},
+  {value:'other',label:'Друг тип',icon:'calculator'}
 ];
 const planOptions=[
   {value:'annuity',label:'Анюитетен план'},
@@ -40,7 +40,7 @@ export const createLoanForm=(onSubmit)=>{
     createEl('label',{},['FAQ/Обяснения',selectFrom('infoLevel',infoOptions,'short')]),
     createEl('label',{},['CTA',selectFrom('ctaType',ctaOptions,'link')]),
     createEl('div',{className:'form-actions'},[
-      createEl('button',{type:'submit'},['Изчисли']),
+      createEl('button',{type:'submit'},[createIcon('calculator',16),' Изчисли']),
       createEl('button',{type:'reset'},['Изчисти'])
     ])
   ]);
@@ -74,7 +74,7 @@ export const createLoanForm=(onSubmit)=>{
   return section;
 };
 
-const selectFrom=(name,options,selected)=>createEl('select',{name,required:true},options.map(({value,label})=>{
+const selectFrom=(name,options,selected)=>createEl('select',{name,required:true},options.map(({value,label,icon})=>{
   const option=createEl('option',{value},[label]);
   if(value===selected)option.selected=true;
   return option;
