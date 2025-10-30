@@ -16,15 +16,17 @@ const createServer=()=>http.createServer((req,res)=>{
   const normalized=path.posix.normalize(requestPath);
   const segments=normalized.split('/').filter(Boolean).filter(segment=>segment!=='..');
   const safePath=segments.join('/')||'index.html';
-  let baseDir=publicDir;
+  let filePath;
   if(safePath.startsWith('src/')){
-    baseDir=path.join(root,'src');
+    filePath=path.join(root,safePath);
+  }else{
+    filePath=path.join(publicDir,safePath);
   }
-  let filePath=path.join(baseDir,safePath);
   if(requestPath==='/'||requestPath==='/index.html'){
     filePath=path.join(publicDir,'index.html');
   }
-  if(!filePath.startsWith(baseDir)){
+  const allowedRoots=[publicDir,root];
+  if(!allowedRoots.some(allowed=>filePath.startsWith(allowed))){
     res.writeHead(403);
     res.end('Forbidden');
     return;
