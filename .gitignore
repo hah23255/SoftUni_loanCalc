@@ -1,3 +1,15 @@
 node_modules/
 .DS_Store
 npm-debug.log*
+
+# Firebase
+.firebase/
+firebase-debug.log*
+.firebaserc.local
+
+# Built files in public (keep only index.html)
+public/main.js
+public/styles/
+public/components/
+public/services/
+public/utils/
