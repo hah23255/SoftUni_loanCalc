@@ -74,6 +74,28 @@ This copies all source files from `src/` into the `public/` directory, which is 
 
 For automatic deployments on push, you can set up GitHub Actions with Firebase Hosting.
 
+### Setup GitHub Actions (Optional)
+
+A workflow file is already included at `.github/workflows/firebase-deploy.yml`.
+
+To enable automatic deployments:
+
+1. Generate a Firebase service account key:
+   ```bash
+   firebase init hosting:github
+   ```
+   OR manually at: https://console.firebase.google.com/project/your-project-id/settings/serviceaccounts/adminsdk
+
+2. Add the service account JSON as a GitHub secret:
+   - Go to your GitHub repository
+   - Settings → Secrets and variables → Actions
+   - Add new repository secret: `FIREBASE_SERVICE_ACCOUNT`
+   - Paste the entire JSON content
+
+3. Push to the `main` branch, and GitHub Actions will automatically build and deploy your app
+
+Note: Update the `projectId` in `.github/workflows/firebase-deploy.yml` if you use a different project name.
+
 ## Local Testing
 
 To test the built version locally before deploying:
