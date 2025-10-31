@@ -10,29 +10,47 @@ const publicDir = path.join(root, 'public');
 
 // Create public/src directory if it doesn't exist
 const publicSrcDir = path.join(publicDir, 'src');
-if (!fs.existsSync(publicSrcDir)) {
-  fs.mkdirSync(publicSrcDir, {recursive: true});
-}
 
 // Copy src directory to public/src
 function copyRecursive(src, dest) {
-  const stats = fs.statSync(src);
-  
-  if (stats.isDirectory()) {
-    if (!fs.existsSync(dest)) {
-      fs.mkdirSync(dest, {recursive: true});
-    }
+  try {
+    const stats = fs.statSync(src);
     
-    const files = fs.readdirSync(src);
-    files.forEach(file => {
-      copyRecursive(path.join(src, file), path.join(dest, file));
-    });
-  } else {
-    fs.copyFileSync(src, dest);
+    if (stats.isDirectory()) {
+      if (!fs.existsSync(dest)) {
+        fs.mkdirSync(dest, {recursive: true});
+      }
+      
+      const files = fs.readdirSync(src);
+      files.forEach(file => {
+        copyRecursive(path.join(src, file), path.join(dest, file));
+      });
+    } else {
+      fs.copyFileSync(src, dest);
+    }
+  } catch (error) {
+    console.error(`Error copying ${src} to ${dest}:`, error.message);
+    process.exit(1);
   }
 }
 
-console.log('Preparing files for deployment...');
-copyRecursive(srcDir, publicSrcDir);
-console.log('✓ Files copied to public/src');
-console.log('✓ Ready for deployment!');
+try {
+  console.log('Preparing files for deployment...');
+  
+  // Verify source directory exists
+  if (!fs.existsSync(srcDir)) {
+    throw new Error(`Source directory not found: ${srcDir}`);
+  }
+  
+  // Create public/src directory if needed
+  if (!fs.existsSync(publicSrcDir)) {
+    fs.mkdirSync(publicSrcDir, {recursive: true});
+  }
+  
+  copyRecursive(srcDir, publicSrcDir);
+  console.log('✓ Files copied to public/src');
+  console.log('✓ Ready for deployment!');
+} catch (error) {
+  console.error('Deployment preparation failed:', error.message);
+  process.exit(1);
+}
