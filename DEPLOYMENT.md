@@ -146,6 +146,8 @@ firebase.json        # Firebase configuration
 .firebaserc          # Firebase project reference
 ```
 
+**Note:** The `firebase.json` configuration sets a 1-year cache (`max-age=31536000` seconds) for JS and CSS files to optimize performance.
+
 ## Development Workflow
 
 1. Make changes in `src/` directory

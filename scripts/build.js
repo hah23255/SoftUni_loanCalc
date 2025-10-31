@@ -1,4 +1,4 @@
-import { copyFileSync, mkdirSync, readdirSync, statSync } from 'fs';
+import { copyFileSync, mkdirSync, readdirSync } from 'fs';
 import { join, dirname } from 'path';
 import { fileURLToPath } from 'url';
 
@@ -13,7 +13,10 @@ dirs.forEach(dir => {
   try {
     mkdirSync(join(publicDir, dir), { recursive: true });
   } catch (e) {
-    // Directory might already exist
+    // Ignore EEXIST errors (directory already exists)
+    if (e.code !== 'EEXIST') {
+      console.error(`Error creating directory ${dir}:`, e.message);
+    }
   }
 });
 
