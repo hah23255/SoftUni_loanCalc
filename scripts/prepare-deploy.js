@@ -42,11 +42,6 @@ try {
     throw new Error(`Source directory not found: ${srcDir}`);
   }
   
-  // Create public/src directory if needed
-  if (!fs.existsSync(publicSrcDir)) {
-    fs.mkdirSync(publicSrcDir, {recursive: true});
-  }
-  
   copyRecursive(srcDir, publicSrcDir);
   console.log('✓ Files copied to public/src');
   console.log('✓ Ready for deployment!');
