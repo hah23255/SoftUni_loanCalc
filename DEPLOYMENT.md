@@ -1,156 +1,117 @@
 # Firebase Deployment Guide
 
-This guide explains how to deploy the SoftUni Loan Calculator to Firebase Hosting.
+## Обща информация
 
-## Prerequisites
+Този проект е конфигуриран за деплой във Firebase Hosting.
 
-1. Install Firebase CLI globally:
-   ```bash
-   npm install -g firebase-tools
-   ```
+- **Firebase Project ID**: web-v01
+- **Hosting Directory**: `public/`
 
-2. Login to Firebase:
-   ```bash
-   firebase login
-   ```
+## Конфигурационни файлове
 
-## Setup
+### firebase.json
+Съдържа настройките за Firebase Hosting:
+- Сървира файлове от `public/` директорията
+- Пренасочва всички заявки към `index.html` (SPA behavior)
+- Настройва кеширане за JS и CSS файлове
 
-The project is already configured with:
-- `firebase.json` - Firebase hosting configuration
-- `.firebaserc` - Firebase project reference
+### .firebaserc
+Свързва локалния проект с Firebase проекта `web-v01`.
 
-## Building for Production
+## Процес на деплой
 
-Before deploying, build the project:
+### 1. Подготовка на файловете
 
-```bash
-npm run build
-```
-
-This copies all source files from `src/` into the `public/` directory, which is served by Firebase Hosting.
-
-## Deployment Steps
-
-### First Time Setup
-
-1. Create a Firebase project at https://console.firebase.google.com/
-   - Project name: `softuni-loan-calc` (or any name you prefer)
-   - Enable Google Analytics (optional)
-
-2. Update `.firebaserc` with your project ID if different:
-   ```json
-   {
-     "projects": {
-       "default": "your-project-id"
-     }
-   }
-   ```
-
-3. Initialize Firebase (if needed):
-   ```bash
-   firebase init hosting
-   ```
-   - Select existing project or create new one
-   - Use `public` as the public directory
-   - Configure as single-page app: No
-   - Don't overwrite existing files
-
-### Deploy to Firebase
-
-1. Build the project:
-   ```bash
-   npm run build
-   ```
-
-2. Deploy to Firebase:
-   ```bash
-   firebase deploy
-   ```
-
-3. Your app will be live at: `https://your-project-id.web.app`
-
-## Continuous Deployment
-
-For automatic deployments on push, you can set up GitHub Actions with Firebase Hosting.
-
-### Setup GitHub Actions (Optional)
-
-A workflow file is already included at `.github/workflows/firebase-deploy.yml`.
-
-To enable automatic deployments:
-
-1. Generate a Firebase service account key:
-   ```bash
-   firebase init hosting:github
-   ```
-   OR manually at: https://console.firebase.google.com/project/your-project-id/settings/serviceaccounts/adminsdk
-
-2. Add the service account JSON as a GitHub secret:
-   - Go to your GitHub repository
-   - Settings → Secrets and variables → Actions
-   - Add new repository secret: `FIREBASE_SERVICE_ACCOUNT`
-   - Paste the entire JSON content
-
-3. Push to the `main` branch, and GitHub Actions will automatically build and deploy your app
-
-Note: Update the `projectId` in `.github/workflows/firebase-deploy.yml` if you use a different project name.
-
-## Local Testing
-
-To test the built version locally before deploying:
+Преди деплой, файловете от `src/` се копират в `public/src/`:
 
 ```bash
-npm run build
-firebase serve
+npm run prepare-deploy
 ```
 
-This will start a local server at http://localhost:5000
+Това гарантира, че всички JavaScript модули и стилове са налични в правилната директория за сървиране.
 
-## Troubleshooting
+### 2. Деплой
 
-### "An unexpected error has occurred"
-
-If you get this error when running Firebase commands:
-1. Make sure you're logged in: `firebase login`
-2. Check your internet connection
-3. Verify the project exists in Firebase Console
-4. Try logging out and back in: `firebase logout` then `firebase login`
-
-### Files not loading
-
-If CSS or JS files don't load after deployment:
-1. Make sure you ran `npm run build` before deploying
-2. Check that all files exist in the `public/` directory
-3. Verify paths in `public/index.html` are relative (no `../`)
-
-## Project Structure
-
-```
-public/              # Firebase hosting public directory
-  ├── index.html     # Main HTML file
-  ├── main.js        # Main application JS (built)
-  ├── styles/        # CSS files (built)
-  ├── components/    # Component files (built)
-  ├── services/      # Service files (built)
-  └── utils/         # Utility files (built)
-
-src/                 # Source files
-  ├── main.js
-  ├── components/
-  ├── services/
-  ├── styles/
-  └── utils/
-
-firebase.json        # Firebase configuration
-.firebaserc          # Firebase project reference
+#### Пълен деплой (препоръчително):
+```bash
+npm run deploy
 ```
 
-**Note:** The `firebase.json` configuration sets a 1-year cache (`max-age=31536000` seconds) for JS and CSS files to optimize performance.
+Тази команда:
+1. Изпълнява `prepare-deploy` скрипта
+2. Деплойва всички Firebase услуги
 
-## Development Workflow
+#### Само Hosting:
+```bash
+npm run deploy:hosting
+```
 
-1. Make changes in `src/` directory
-2. Test with dev server: `npm run dev`
-3. Build for production: `npm run build`
-4. Deploy: `firebase deploy`
+Деплойва само статичните файлове в Firebase Hosting.
+
+#### Ръчен деплой:
+```bash
+firebase deploy --only hosting
+```
+
+## Проверка след деплой
+
+След успешен деплой, Firebase ще покаже URL адреса на приложението:
+- **Hosting URL**: https://web-v01.web.app
+- **Алтернативен URL**: https://web-v01.firebaseapp.com
+
+Отворете URL адреса в браузър за да проверите дали приложението работи правилно.
+
+## Решаване на проблеми
+
+### Грешка: "Firebase command not found"
+
+Инсталирайте Firebase CLI глобално:
+```bash
+npm install -g firebase-tools
+```
+
+### Грешка: Authentication error
+
+Логнете се отново във Firebase:
+```bash
+firebase login
+```
+
+### Грешка: Project not found
+
+Уверете се, че проектът `web-v01` съществува във вашия Firebase акаунт и че имате достъп до него.
+
+### Файловете не се обновяват
+
+1. Изчистете кеша на Firebase:
+   ```bash
+   firebase hosting:disable
+   firebase hosting:enable
+   ```
+
+2. Изчистете кеша на браузъра или проверете в режим incognito.
+
+## Локално тестване
+
+Преди деплой, можете да тествате приложението локално:
+
+```bash
+npm run dev
+```
+
+Това стартира локален сървър на порт 5173.
+
+## Версиониране
+
+При всеки деплой, Firebase запазва предишната версия. Можете да върнете към предишна версия от Firebase Console:
+
+1. Отворете Firebase Console
+2. Изберете проекта `web-v01`
+3. Отидете в Hosting секцията
+4. Изберете "Release history"
+5. Изберете версията която искате да възстановите
+
+## Допълнителна информация
+
+- [Firebase Hosting Documentation](https://firebase.google.com/docs/hosting)
+- [Firebase CLI Reference](https://firebase.google.com/docs/cli)

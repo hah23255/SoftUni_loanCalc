@@ -5,6 +5,8 @@
   "scripts": {
     "dev": "node scripts/serve.js",
     "test": "node tests/run-tests.js",
-    "build": "node scripts/build.js"
+    "prepare-deploy": "node scripts/prepare-deploy.js",
+    "deploy": "npm run prepare-deploy && firebase deploy",
+    "deploy:hosting": "npm run prepare-deploy && firebase deploy --only hosting"
   }
 }

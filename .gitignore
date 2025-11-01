@@ -4,12 +4,9 @@ npm-debug.log*
 
 # Firebase
 .firebase/
-firebase-debug.log*
-.firebaserc.local
+firebase-debug.log
+firestore-debug.log
+ui-debug.log
 
-# Built files in public (keep only index.html)
-public/main.js
-public/styles/
-public/components/
-public/services/
-public/utils/
+# Build outputs
+public/src/
